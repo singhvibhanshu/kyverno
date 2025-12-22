@@ -431,7 +431,7 @@ jobs:
       - uses: ./.github/actions/run-tests
         with:
           k8s-version: ${{ matrix.k8s-version }}
-          kyverno-configs: standard
+          kyverno-configs: exclude-result
           token: ${{ secrets.GITHUB_TOKEN }}
           tests-path: reports-exclude-result
 
