@@ -1044,10 +1044,10 @@ kind-load-image-archive: $(KIND) ## Load docker images from archive
 	@$(KIND) load image-archive kyverno.tar --name $(KIND_NAME)
 
 .PHONY: kind-install-kyverno
-kind-install-kyverno: helm-setup-openreports ## Install kyverno helm chart
+kind-install-kyverno:  ## Install kyverno helm chart
 	@echo Install kyverno chart... >&2
-	@$(HELM) upgrade --install kyverno --namespace kyverno --create-namespace --wait ./charts/kyverno \
-		--set admissionController.container.image.registry=$(LOCAL_REGISTRY) \
+	$(HELM) template kyverno --namespace kyverno ./charts/kyverno \
+		--set admissionController.container.image.registry=$(LOCAL_REGISTRY) --kube-version="1.25.0" \
 		--set admissionController.container.image.repository=$(LOCAL_KYVERNO_REPO) \
 		--set admissionController.container.image.tag=$(GIT_SHA) \
 		--set admissionController.initContainer.image.registry=$(LOCAL_REGISTRY) \
@@ -1067,7 +1067,7 @@ kind-install-kyverno: helm-setup-openreports ## Install kyverno helm chart
 		--set crds.migration.image.tag=$(GIT_SHA) \
 		--values ./scripts/config/resources/kyverno.yaml \
 		$(foreach CONFIG,$(subst $(COMMA), ,$(USE_CONFIG)),--values ./scripts/config/$(CONFIG)/kyverno.yaml) \
-		$(EXPLICIT_INSTALL_SETTINGS)
+		$(EXPLICIT_INSTALL_SETTINGS) > tmpl
 
 .PHONY: kind-install-kyverno-from-repo
 kind-install-kyverno-from-repo: $(HELM) ## Install Kyverno Helm Chart from the Kyverno repo

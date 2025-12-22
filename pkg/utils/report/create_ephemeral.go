@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/kyverno/api/kyverno"
 	reportsv1 "github.com/kyverno/kyverno/api/reports/v1"
 	"github.com/kyverno/kyverno/pkg/client/clientset/versioned"
+	engineapi "github.com/kyverno/kyverno/pkg/engine/api"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -21,6 +22,17 @@ func IsPolicyReportable(pol metav1.Object) bool {
 		return false
 	}
 	return true
+}
+
+func GetReportableResponses(responses []engineapi.RuleResponse, config ReportingConfiguration) []engineapi.RuleResponse {
+	reportableResponses := []engineapi.RuleResponse{}
+	for _, r := range responses {
+		_, ok := ReportingCfg.AllowedRuleStatus()[r.Status()]
+		if ok {
+			reportableResponses = append(reportableResponses, r)
+		}
+	}
+	return reportableResponses
 }
 
 // IsNamespaceTerminationError checks if the error is due to namespace being terminated
