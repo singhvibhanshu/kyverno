@@ -42,6 +42,7 @@ spec:
           if [ "$POLR_COUNT" -ne 1 ]; then
             echo "ERROR: Policy reports are not equal 1 when they should"
             kubectl get polr -n myns
+            kubectl get deploy -n kyverno -o yaml
             exit 1
           else
             echo "SUCCESS: Policy reports are one as expected"
