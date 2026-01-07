@@ -20,6 +20,10 @@ import (
 	"github.com/kyverno/kyverno/pkg/cel/libs/math"
 	"github.com/kyverno/kyverno/pkg/cel/libs/random"
 	"github.com/kyverno/kyverno/pkg/cel/libs/resource"
+	"github.com/kyverno/kyverno/pkg/cel/libs/time"
+	"github.com/kyverno/kyverno/pkg/cel/libs/transform"
+	"github.com/kyverno/kyverno/pkg/cel/libs/x509"
+	"github.com/kyverno/kyverno/pkg/cel/libs/yaml"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/apimachinery/pkg/util/version"
 	apiservercel "k8s.io/apiserver/pkg/cel"
@@ -58,7 +62,7 @@ func createBaseGpolEnv(namespace string) (*environment.EnvSet, *compiler.Variabl
 		cel.Variable(compiler.ImageDataKey, imagedata.ContextType),
 	)
 
-	base := environment.MustBaseEnvSet(gpolCompilerVersion, false)
+	base := environment.MustBaseEnvSet(gpolCompilerVersion)
 	env, err := base.Env(environment.StoredExpressions)
 	if err != nil {
 		return nil, nil, err
@@ -115,8 +119,21 @@ func createBaseGpolEnv(namespace string) (*environment.EnvSet, *compiler.Variabl
 					&json.JsonImpl{},
 					json.Latest(),
 				),
+				yaml.Lib(
+					&yaml.YamlImpl{},
+					yaml.Latest(),
+				),
 				random.Lib(
 					random.Latest(),
+				),
+				x509.Lib(
+					x509.Latest(),
+				),
+				time.Lib(
+					time.Latest(),
+				),
+				transform.Lib(
+					transform.Latest(),
 				),
 			},
 		},
